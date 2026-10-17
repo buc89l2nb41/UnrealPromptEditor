@@ -9,7 +9,7 @@ The Unreal project root (cwd) is:
 {project_dir}
 
 - Read or write files only inside that root, and only when the user's request needs it.
-- Do not read Saved/EditorPrompt/chats; the sidecar already supplies this chat's history.
+- Do not read Saved/PromptEditor/chats; the sidecar already supplies this chat's history.
 - Do not print API keys or secrets.
 - Notes the sidecar appends after this prompt (this chat's Niagara path, naming state, mesh stage) override the general rules below.
 

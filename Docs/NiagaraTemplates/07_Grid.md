@@ -200,7 +200,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 격자 시스템 생성
 

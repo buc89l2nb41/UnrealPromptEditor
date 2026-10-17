@@ -9,7 +9,7 @@
 |--|------|
 | 문서 | `D:\Cursor\UnrealPrompt\PromptEditor\` |
 | 프로젝트 | `D:\Cursor\UnrealPrompt\PromptEditor\PromptEditor.uproject` |
-| 플러그인 | `PromptEditor/Plugins/EditorPrompt/` |
+| 플러그인 | `PromptEditor/Plugins/PromptEditor/` |
 | 사이드카 | `PromptEditor/sidecar/` (Cursor SDK). 키는 `sidecar/.env` |
 | MCP | 에디터 켠 뒤 loopback (기본 `18765`, 점유 시 다음 포트) |
 | 엔진 | UE **5.4** — `D:\Program Files\Epic Games\UE_5.4` |

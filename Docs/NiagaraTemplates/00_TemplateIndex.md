@@ -1,7 +1,7 @@
 # Niagara 템플릿 인덱스
 
 > 언리얼 엔진 5.x Niagara 이미터 템플릿 가이드
-> EditorPrompt VFX 자동화를 위한 참고 자료
+> PromptEditor VFX 자동화를 위한 참고 자료
 
 ---
 
@@ -53,11 +53,11 @@
 2. **주요 파라미터** - 조절 가능한 핵심 값
 3. **모듈 조합 효과 5가지** - 다른 모듈과 조합했을 때의 효과
 4. **활용 예시 5가지** - 구체적인 VFX 사례
-5. **EditorPrompt 레시피** - MCP 도구 호출 예시
+5. **PromptEditor 레시피** - MCP 도구 호출 예시
 
 ---
 
-## 🔧 EditorPrompt 연동
+## 🔧 PromptEditor 연동
 
 ### 템플릿 기반 시스템 생성
 

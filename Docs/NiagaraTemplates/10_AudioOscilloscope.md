@@ -215,7 +215,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 오디오 시각화 생성
 

@@ -7,11 +7,11 @@
 | 단계 | 이름 | 통과 (한 줄) | 산출 |
 |------|------|----------------|------|
 | **0** | 자리 | 빈 UE 5.4 + 에디터 전용 플러그인 로드 | 프로젝트/플러그인 |
-| **1** | 창 | Window → Editor Prompt. 전송·로그·Send 잠금 | Slate UI |
+| **1** | 창 | Tools → PromptEditor. 전송·로그·Send 잠금 | Slate UI |
 | **2** | LLM | 키는 `.env`. **모델은 패널 드롭다운.** 한 줄 → 답 → 로그 | Cursor API |
 | **3** | MCP | loopback. 포트 회피. `spawn_cube`. Undo | 손 |
 | **4** | 세션 | 프로젝트·chat_id별 Agent. cwd=프로젝트 | 맥락 |
-| **5** | 저장 | `Saved/EditorPrompt/chats/<id>/turns/` + New Agent | 끄고 켜기 |
+| **5** | 저장 | `Saved/PromptEditor/chats/<id>/turns/` + New Agent | 끄고 켜기 |
 | **6** | 한도 | 현재 스레드만. 옛 턴 자르기. (나중 resume/검색) | 컨텍스트 |
 | **7** | 손 (본체) | 맵·액터·빛·머티리얼·Niagara·카메라·환경 등 **100칸**. 그래프 아님 | [`todo/roadmap-7.md`](todo/roadmap-7.md) |
 | **7V** | 레퍼런스 VFX | 이미지 보기 → 스펙 → 있는 손 → 스크린샷 비교. Grid2D는 본선 아님 | [`todo/vfx-loop.md`](todo/vfx-loop.md) |

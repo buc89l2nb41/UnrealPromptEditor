@@ -198,7 +198,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 분수 효과 생성
 

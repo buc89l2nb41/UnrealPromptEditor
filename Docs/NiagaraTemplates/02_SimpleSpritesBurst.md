@@ -187,7 +187,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 기본 버스트 생성
 

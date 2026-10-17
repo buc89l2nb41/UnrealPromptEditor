@@ -123,7 +123,7 @@ v0 큐브(`spawn_cube`)는 전선 확인용이다. **이 장이 본체다.** Cur
 | [x] | **7G3.** `focus_actor` | 프레임 |
 | [x] | **7G4.** `spawn_camera`. Undo | 카메라 액터 |
 | [x] | **7G5.** `spawn_cine_camera`. Undo | CineCamera |
-| [x] | **7G6.** `capture_viewport` — `Saved/EditorPrompt/screenshots/` | 파일 |
+| [x] | **7G6.** `capture_viewport` — `Saved/PromptEditor/screenshots/` | 파일 |
 
 ## 7H. 환경 (6)
 

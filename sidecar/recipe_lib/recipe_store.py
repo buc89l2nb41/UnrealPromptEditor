@@ -77,7 +77,7 @@ class VFXRecipe:
 
 def _recipes_root(project_dir: str) -> Path:
     """레시피 저장 루트 디렉토리."""
-    return Path(project_dir) / "Saved" / "EditorPrompt" / "recipes"
+    return Path(project_dir) / "Saved" / "PromptEditor" / "recipes"
 
 
 def _sanitize_id(name: str) -> str:

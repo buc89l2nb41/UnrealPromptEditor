@@ -200,7 +200,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 리본 트레일 생성
 

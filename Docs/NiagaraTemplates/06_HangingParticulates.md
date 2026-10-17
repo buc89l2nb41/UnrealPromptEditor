@@ -198,7 +198,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 떠다니는 입자 생성
 

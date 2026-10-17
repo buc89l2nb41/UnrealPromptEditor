@@ -1,10 +1,10 @@
 # HangingParticulates + Gravity + Collision 분석
 
-> EditorPrompt 업그레이드 참고 자료 - 나뭇잎/눈 떨어지는 효과 분석
+> PromptEditor 업그레이드 참고 자료 - 나뭇잎/눈 떨어지는 효과 분석
 
 ## 📋 배경
 
-EditorPrompt에서 나뭇잎 파티클(`NS_Leaf`)을 만들 때, `HangingParticulates` 템플릿에 Gravity와 Collision 모듈만 추가한 것이 직접 처음부터 만든 것보다 더 자연스러웠던 이유를 분석합니다.
+PromptEditor에서 나뭇잎 파티클(`NS_Leaf`)을 만들 때, `HangingParticulates` 템플릿에 Gravity와 Collision 모듈만 추가한 것이 직접 처음부터 만든 것보다 더 자연스러웠던 이유를 분석합니다.
 
 ---
 
@@ -129,7 +129,7 @@ v_terminal = √(2·m·g / (ρ·A·C_d))
 
 ---
 
-## ✅ EditorPrompt 적용 가이드
+## ✅ PromptEditor 적용 가이드
 
 ### 나뭇잎 효과 레시피
 
@@ -171,5 +171,5 @@ v_terminal = √(2·m·g / (ρ·A·C_d))
 
 ## 📚 참고
 
-- 대화 소스: EditorPrompt 채팅 `c199d769-49f2-02af-90c0-63ace2ec0879`
+- 대화 소스: PromptEditor 채팅 `c199d769-49f2-02af-90c0-63ace2ec0879`
 - Turn 39-45에서 NS_Leaf 작업 및 분석

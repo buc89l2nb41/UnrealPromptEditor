@@ -1,4 +1,4 @@
-"""Schema-gated writes into Saved/EditorPrompt/effects/<id>/."""
+"""Schema-gated writes into Saved/PromptEditor/effects/<id>/."""
 
 from __future__ import annotations
 

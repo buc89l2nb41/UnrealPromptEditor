@@ -16,15 +16,15 @@ Cursor 앱 채팅 / `mcp.json`으로 에디터를 조종하지 않는다. MCP는
 
 | | 칸 | 통과 |
 |--|--|--|
-| [x] | **A1.** `PromptEditor.uproject` + `Plugins/EditorPrompt` (`EditorNoCommandlet`) | 프로젝트 열림 |
+| [x] | **A1.** `PromptEditor.uproject` + `Plugins/PromptEditor` (`EditorNoCommandlet`) | 프로젝트 열림 |
 | [x] | **A2.** 플러그인 C++ 빌드 통과 | UAT/에디터 컴파일 |
-| [x] | **A3.** 이 프로젝트를 에디터로 열어 플러그인 로드 | `Tools → Editor Prompt` |
+| [x] | **A3.** 이 프로젝트를 에디터로 열어 플러그인 로드 | `Tools → PromptEditor` |
 
 ## B. 패널 창
 
 | | 칸 | 통과 |
 |--|--|--|
-| [x] | **B1.** `Window → Editor Prompt` Nomad 탭 | 메뉴로 열림 |
+| [x] | **B1.** `Tools → PromptEditor` Nomad 탭 | 메뉴로 열림 |
 | [x] | **B2.** 입력 + Send. 빈 줄 무시. Ctrl+Enter | 로그에 유저 줄 |
 | [x] | **B3.** 입력 포커스가 뷰포트를 삼키지 않음 | 뷰포트 클릭·카메라 됨 |
 | [x] | **B4.** Send 중 버튼/입력 잠금. 끝날 때까지 재전송 없음 | 두 번 연속 Send 안 됨 |
@@ -73,7 +73,7 @@ Cursor 앱 채팅 / `mcp.json`으로 에디터를 조종하지 않는다. MCP는
 
 | | 칸 | 통과 |
 |--|--|--|
-| [x] | **G1.** 경로 `Saved/EditorPrompt/chats/<chat_id>/` (Content 아님, git 안 탐) | 폴더 생김 |
+| [x] | **G1.** 경로 `Saved/PromptEditor/chats/<chat_id>/` (Content 아님, git 안 탐) | 폴더 생김 |
 | [x] | **G2.** `meta.json` — id, 제목, 생성/수정, 선택 모델, (있으면) `agent_id` | 파일 있음 |
 | [x] | **G3.** `turns/0001.json` … — **Send 한 번** = 유저 + 도구 + 답 | 사이클당 한 파일 |
 | [x] | **G4.** 기본 스레드 하나(자동 생성). 패널에 목록 + **New Agent** | 스레드 두 개 분리 |

@@ -1,6 +1,6 @@
 # VFX 레시피 라이브러리 시스템
 
-> EditorPrompt가 학습하는 이펙트 레시피 시스템
+> PromptEditor가 학습하는 이펙트 레시피 시스템
 
 ---
 
@@ -22,7 +22,7 @@ VFX 레시피 라이브러리는 사용자가 만족한 이펙트를 저장하�
 ## 📁 저장 구조
 
 ```
-Saved/EditorPrompt/
+Saved/PromptEditor/
 ├── recipes/                    # 레시피 라이브러리
 │   ├── index.json              # 전체 인덱스 (빠른 검색용)
 │   ├── shooting_star/          

@@ -75,7 +75,7 @@ def trellis_start_hint() -> str:
 
 
 def meshes_root(project_dir: str) -> Path:
-    return Path(project_dir) / "Saved" / "EditorPrompt" / "meshes"
+    return Path(project_dir) / "Saved" / "PromptEditor" / "meshes"
 
 
 def sanitize_mesh_id(raw: str) -> str:
@@ -384,7 +384,7 @@ def trellis_ping(base: str) -> tuple[bool, bool, str]:
 
 
 def _multipart(fields: Mapping[str, str], file_field: str, file_path: Path) -> tuple[bytes, str]:
-    boundary = "----EditorPrompt" + uuid.uuid4().hex
+    boundary = "----PromptEditor" + uuid.uuid4().hex
     parts: list[bytes] = []
     for key, value in fields.items():
         parts.append(

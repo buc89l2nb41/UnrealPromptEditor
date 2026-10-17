@@ -4,7 +4,7 @@
 2. The user approves the picture (or asks for changes).
 3. Cutouts and glows get two alpha options: A (colour key or brightness) and B (rembg).
    The user picks one. Tiles are made seamless instead.
-4. The final PNG goes to Saved/EditorPrompt/gen/<name>.png for import_texture.
+4. The final PNG goes to Saved/PromptEditor/gen/<name>.png for import_texture.
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ def sanitize_name(raw: str) -> str:
 
 
 def tex_dir(project_dir: str, name: str) -> Path:
-    path = Path(project_dir).resolve() / "Saved" / "EditorPrompt" / "textures" / name
+    path = Path(project_dir).resolve() / "Saved" / "PromptEditor" / "textures" / name
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -87,7 +87,7 @@ def tiled_png(project_dir: str, name: str) -> Path:
 
 
 def final_png(project_dir: str, name: str) -> Path:
-    path = Path(project_dir).resolve() / "Saved" / "EditorPrompt" / "gen" / f"{name}.png"
+    path = Path(project_dir).resolve() / "Saved" / "PromptEditor" / "gen" / f"{name}.png"
     path.parent.mkdir(parents=True, exist_ok=True)
     return path
 

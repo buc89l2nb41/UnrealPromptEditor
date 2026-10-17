@@ -10,7 +10,7 @@ Editor Prompt 제품은 그대로다. 패널 → 사이드카 → MCP → 뷰포
 |----|------|
 | 사이드카 | `sidecar/mesh_flow.py` (TRELLIS 클라이언트, 단계 말, 그림 결과), `server.py` (`request_mesh` 도구, `_mesh_turn` 게이트) |
 | TRELLIS 켜기 | `sidecar/start-trellis.bat` → `start_trellis.py` (`.env`의 `TRELLIS_HOME`/`TRELLIS_URL`) |
-| 언리얼 | `EditorPromptMcpMesh.cpp` (`import_static_mesh`, `discard_mesh_preview`) |
+| 언리얼 | `PromptEditorMcpMesh.cpp` (`import_static_mesh`, `discard_mesh_preview`) |
 
 확인한 것: 실제 7960에 이 폼 값으로 GLB 3.5MB / 191초(RTX 2060S 8GB, 약 4.6만 삼각형, PBR 텍스처 2장). 같은 GLB를 UE 5.4 Interchange `ImportAssetsAutomated`로 메쉬·머티리얼·텍스처 2장 임포트 성공. Interchange는 파일 이름으로 메쉬 이름을 짓기 때문에 `SM_<이름>.glb` 사본을 임포트한다.
 
@@ -62,7 +62,7 @@ Niagara 이름을 묻고 기다리듯이, 아래도 **Send를 끊는다.**
 
 TRELLIS는 비싸고, 한번 임포트한 `/Game/Meshes/SM_Tree`를 바로 씬의 나무로 쓰면 거절이 더럽다.
 
-- **미리보기:** `Saved/EditorPrompt/meshes/<id>/out.glb`를 임시 경로(예: `/Game/Meshes/Preview/SM_pending`)로 가져와 카메라 앞에 스폰. 태그 `EditorPromptPreview`. 유저가 돌아보며 본다. 이게 “모델링을 눈으로 확인”.
+- **미리보기:** `Saved/PromptEditor/meshes/<id>/out.glb`를 임시 경로(예: `/Game/Meshes/Preview/SM_pending`)로 가져와 카메라 앞에 스폰. 태그 `PromptEditorPreview`. 유저가 돌아보며 본다. 이게 “모델링을 눈으로 확인”.
 - **적용:** 유저가 적합하다고 한 뒤에만 `/Game/Meshes/SM_<이름>`으로 복사·임포트하고, 나무 자리(예전에 큐브가 있던 곳)에 둔다. 미리보기 액터는 지운다.
 
 1차에 미리보기 PNG 턴테이블은 없어도 된다. 이 제품의 판정은 뷰포트다.
@@ -101,7 +101,7 @@ TRELLIS는 비싸고, 한번 임포트한 `/Game/Meshes/SM_Tree`를 바로 씬�
 - TRELLIS 동봉 `run-stableprojectorz.bat`은 설치 폴더를 옮기면 venv가 옛 경로를 가리켜 `torch`를 못 찾는다(이 PC에서 실제로 그랬다). 그래서 저장소 런처가 venv와 포터블 Python 중 torch가 있는 쪽을 골라 `api_spz/main_api.py`를 `TRELLIS_URL` 포트로 띄운다. 런처는 TRELLIS 프로세스에 `CURSOR_API_KEY`를 넘기지 않는다.
 - 첫 기동은 모델 로드로 몇 분(이 PC 약 10분). 쉬는 동안 VRAM은 약 0.4GB라 언리얼과 같이 둬도 된다. 생성 중에만 크게 쓴다.
 
-`.env.example` 만듦(빈 `CURSOR_API_KEY`, `TRELLIS_URL`, `TRELLIS_HOME`). `EditorPromptSidecar.cpp`의 “사이드카가 없습니다” 문구는 실제로 찾은 사이드카 경로를 넣도록 고침.
+`.env.example` 만듦(빈 `CURSOR_API_KEY`, `TRELLIS_URL`, `TRELLIS_HOME`). `PromptEditorSidecar.cpp`의 “사이드카가 없습니다” 문구는 실제로 찾은 사이드카 경로를 넣도록 고침.
 
 ---
 
@@ -155,7 +155,7 @@ VFX `generate_png`(아틀라스·잎 스프라이트)와 파일을 섞지 않는
 
 ## 저장
 
-`Saved/EditorPrompt/meshes/<id>/` (Content 아님). VFX `effects/`와 분리.
+`Saved/PromptEditor/meshes/<id>/` (Content 아님). VFX `effects/`와 분리.
 
 | 파일 | 내용 |
 |------|------|

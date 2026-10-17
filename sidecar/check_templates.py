@@ -1,7 +1,7 @@
 """
 Check vfx/templates.json list_name values against the editor's Niagara templates.
 
-Unreal Editor with the EditorPrompt plugin must be running.
+Unreal Editor with the PromptEditor plugin must be running.
 
   .venv\\Scripts\\python check_templates.py [mcp_url]
 """
@@ -22,7 +22,7 @@ def main() -> int:
     listing = call_mcp(mcp_url, "list_niagara_templates", {"look": "all", "max": 40})
     if listing.startswith("mcp "):
         print(listing)
-        print("Start Unreal Editor with the EditorPrompt plugin, then run again.")
+        print("Start Unreal Editor with the PromptEditor plugin, then run again.")
         return 2
     paths = [line.split()[0] for line in listing.splitlines() if line.startswith("/")]
     catalog = json.loads(

@@ -27,7 +27,7 @@ V1은 이미 `[x]`다. 이 계약은 V2에서 말로만 스펙을 말하지 않�
 사이드카가 알고 있어야 한다. 모델이 디스크를 뒤져 찾게 두지 않는다.
 
 ```
-Saved/EditorPrompt/
+Saved/PromptEditor/
 ├── chats/<채팅 id>/                 대화. 지금과 같음
 └── effects/<효과 id>/
     ├── current_vfx.json             레퍼런스에서 본 명세
@@ -60,7 +60,7 @@ PromptEditor는 VFX 전용이 아니다. 큐브, 라이트, 맵 턴에는 VFX �
 | | 단계 | 하는 일 | 하지 않는 일 |
 |--|--|--|--|
 | 1 | copy | `schema/`, `instructions/`, `AGENTS.md` → `sidecar/vfx/`. `vfx-loop.md`의 규칙 경로 한 줄을 `sidecar/vfx/AGENTS.md`로 고친다 | `working/` copy. `server.py` 수정. 프롬프트에 스키마 삽입 |
-| 2 | 효과 폴더 | 사이드카가 활성 효과 id와 `Saved/EditorPrompt/effects/<id>/`를 만들고 기억한다 | 매 채팅에 VFX 설명 추가. `NS_Live` 문장 삭제 |
+| 2 | 효과 폴더 | 사이드카가 활성 효과 id와 `Saved/PromptEditor/effects/<id>/`를 만들고 기억한다 | 매 채팅에 VFX 설명 추가. `NS_Live` 문장 삭제 |
 | 3 | 검증 도구 | JSON 저장 도구가 스키마를 통과한 파일만 쓴다. `generate_png`와 같은 커스텀 도구 | 모델이 검증했다고 말하는 것을 통과로 침 |
 | 4 | VFX 턴만 | 위 두 조건일 때만 짧은 경로 지시를 붙인다. 그 다음에만 기존 MCP | 새 Niagara 그래프 손. Grid2D를 본선으로 |
 | 5 | V2 | 레퍼런스를 붙이고 패널에서 한 번 돌린다. 뷰포트 전에 그 효과의 `current_vfx.json`이 검증을 통과해 있어야 한다 | checklist **I**, **J** |
@@ -72,5 +72,5 @@ PromptEditor는 VFX 전용이 아니다. 큐브, 라이트, 맵 턴에는 VFX �
 ## 지금 코드에서 건드릴 자리
 
 - 프롬프트를 매 요청 앞에 붙이는 곳: `sidecar/server.py`의 `_system_prompt`, `_prompt_with_this_chat_only`. 2단계 전에는 고치지 않는다.
-- 채팅 메타: `Saved/EditorPrompt/chats/<id>/meta.json`. 효과 id는 여기 추가하고, 효과 파일은 `chats/`와 형제인 `effects/`에 둔다.
+- 채팅 메타: `Saved/PromptEditor/chats/<id>/meta.json`. 효과 id는 여기 추가하고, 효과 파일은 `chats/`와 형제인 `effects/`에 둔다.
 - 손: 이미 있는 `create_niagara_system`, 모듈 입력, 스폰, `capture_viewport`. V3 전에는 손을 늘리지 않는다.

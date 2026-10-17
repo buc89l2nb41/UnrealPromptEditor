@@ -196,7 +196,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 전방향 폭발 생성
 

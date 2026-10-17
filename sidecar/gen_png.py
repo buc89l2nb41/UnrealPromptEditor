@@ -85,7 +85,7 @@ def write_generated_png(
     if kind_l == "mask":
         stem = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in (name or kind_l).strip())[:40] or kind_l
         digest = hashlib.sha1(description.encode("utf-8")).hexdigest()[:8]
-        path = root / "Saved" / "EditorPrompt" / "gen" / f"{stem}_{digest}.png"
+        path = root / "Saved" / "PromptEditor" / "gen" / f"{stem}_{digest}.png"
         px = 256
         mask_seed = _seed(description + kind_l)
         buf = bytearray(px * px * 4)

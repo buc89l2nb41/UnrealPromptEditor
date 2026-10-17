@@ -44,7 +44,7 @@ uvicorn server:app --host 127.0.0.1 --port 18766
 
 풀 카드, 스프라이트, 땅 텍스처는 에이전트가 `request_texture` → `GenerateImage`로 그린다. 코드로 그리지 않는다.
 
-흐름: 그림 → "좋아" → 배경 제거 A/B 비교 → "A" 또는 "B" (여러 장이면 "1A 2B") → `Saved/EditorPrompt/gen/<이름>.png` → 에이전트가 원래 요청을 이어서 처리.
+흐름: 그림 → "좋아" → 배경 제거 A/B 비교 → "A" 또는 "B" (여러 장이면 "1A 2B") → `Saved/PromptEditor/gen/<이름>.png` → 에이전트가 원래 요청을 이어서 처리.
 
 | use | 그리는 배경 | A | B |
 |-----|-------------|---|---|

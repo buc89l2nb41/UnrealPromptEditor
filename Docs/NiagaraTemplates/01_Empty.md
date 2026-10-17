@@ -148,7 +148,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 빈 템플릿에서 시작
 

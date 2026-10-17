@@ -25,9 +25,9 @@ Cursor에서 `UnrealEditor-Cmd`로 py를 돌리면 에디터를 다시 켠다. �
 
 ## 할 일
 
-- [ ] **0. 자리.** 빈 UE 5.4 에디터 프로젝트 또는 `Plugins/EditorPrompt`. 모듈 `EditorNoCommandlet`. 기존 게임 프로젝트에 플러그인을 넣지 않음. 에디터 재시작 후 플러그인 로드.
+- [ ] **0. 자리.** 빈 UE 5.4 에디터 프로젝트 또는 `Plugins/PromptEditor`. 모듈 `EditorNoCommandlet`. 기존 게임 프로젝트에 플러그인을 넣지 않음. 에디터 재시작 후 플러그인 로드.
 
-- [ ] **1. 창.** `Window → Editor Prompt`. Slate: `SMultiLineEditableTextBox` + Send. 빈 전송 무시. 포커스가 뷰포트를 삼키지 않게.
+- [ ] **1. 창.** `Tools → PromptEditor`. Slate: `SMultiLineEditableTextBox` + Send. 빈 전송 무시. 포커스가 뷰포트를 삼키지 않게.
 
 - [ ] **2. LLM.** 키는 `sidecar/.env`. 모델은 패널 드롭다운. Send 시 Cursor 에이전트. 응답을 로그에. 실패는 로그에만. 키 문자열 출력 금지.
 

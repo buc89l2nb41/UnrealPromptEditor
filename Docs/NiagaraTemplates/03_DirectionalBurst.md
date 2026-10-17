@@ -198,7 +198,7 @@
 
 ---
 
-## 📝 EditorPrompt 레시피
+## 📝 PromptEditor 레시피
 
 ### 방향성 버스트 생성
 

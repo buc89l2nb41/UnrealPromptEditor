@@ -121,7 +121,7 @@ def write_noise_png(
 
     root = Path(project_dir).resolve()
     stem = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in (name or "noise").strip())[:40] or "noise"
-    dest = root / "Saved" / "EditorPrompt" / "gen"
+    dest = root / "Saved" / "PromptEditor" / "gen"
     dest.mkdir(parents=True, exist_ok=True)
     path = dest / f"{stem}.png"
     img.save(path, optimize=True)

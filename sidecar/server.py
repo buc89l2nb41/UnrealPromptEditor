@@ -910,7 +910,7 @@ def _custom_tools(project_dir: str, chat_id: str, mcp_url: str = "") -> dict[str
         "generate_png": CustomTool(
             execute=execute_png,
             description=(
-                "Bake a data texture under Saved/EditorPrompt/gen for import_texture. "
+                "Bake a data texture under Saved/PromptEditor/gen for import_texture. "
                 "kind=noise is a tiling curl-noise flow field (RG) for UV warp; it is not a colour "
                 "texture. kind=mask is a soft round grayscale mask. Pictures come from request_texture."
             ),
@@ -981,7 +981,7 @@ def _custom_tools(project_dir: str, chat_id: str, mcp_url: str = "") -> dict[str
             execute=execute_vfx_json,
             description=(
                 "Validate JSON against sidecar/vfx/schema and write it into this "
-                "chat's Saved/EditorPrompt/effects/<id>/ folder. "
+                "chat's Saved/PromptEditor/effects/<id>/ folder. "
                 "Does not write if schema validation fails. "
                 "file is one of: " + ", ".join(RECORD_SCHEMAS) + ". "
                 "iteration_history.json is append-only."
@@ -1571,11 +1571,11 @@ def _run_text(
 
 
 def _chats_root(project_dir: str) -> Path:
-    return Path(project_dir) / "Saved" / "EditorPrompt" / "chats"
+    return Path(project_dir) / "Saved" / "PromptEditor" / "chats"
 
 
 def _effects_root(project_dir: str) -> Path:
-    return Path(project_dir) / "Saved" / "EditorPrompt" / "effects"
+    return Path(project_dir) / "Saved" / "PromptEditor" / "effects"
 
 
 def _sanitize_effect_id(raw: str) -> str:
