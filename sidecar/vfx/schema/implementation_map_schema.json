@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "implementation-map-schema",
+  "title": "VFX Implementation Map",
+  "description": "Links each visual property in working/current_vfx.json to the Unreal element that reproduces it. This file stores implementation decisions. It does not change the visual specification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "current_vfx",
+    "entries"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "current_vfx": {
+      "type": "string",
+      "description": "Path of the visual specification these entries describe. Normally working/current_vfx.json."
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "visual_path",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable map id. Validation corrections that target unreal_implementation use entries[id=<id>] as correction.path."
+        },
+        "visual_path": {
+          "type": "string",
+          "description": "Path into current_vfx.json. Component fields use components[id=<component_id>]. Profile samples use components[id=<id>].shape.profile.samples[t=<t>].left or .right. Sample width is the derived span right - left. Colors use components[id=<id>].appearance.colors[role=<role>]. Split on dots outside brackets, so the dot in t=0.5 stays inside the selector."
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "unassigned",
+            "mapped",
+            "blocked"
+          ],
+          "description": "unassigned: no Unreal element has been chosen. mapped: unreal is filled. blocked: the visual property cannot currently be reproduced."
+        },
+        "unreal": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/unrealElement"
+            }
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "mapped"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "unreal"
+            ],
+            "properties": {
+              "unreal": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unassigned"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "unreal": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "unrealElement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_path",
+        "asset_type",
+        "element"
+      ],
+      "properties": {
+        "asset_path": {
+          "type": "string"
+        },
+        "asset_type": {
+          "type": "string",
+          "enum": [
+            "niagara_system",
+            "niagara_emitter",
+            "material",
+            "material_instance",
+            "blueprint",
+            "cpp",
+            "texture",
+            "mesh",
+            "other"
+          ]
+        },
+        "element": {
+          "type": "string",
+          "description": "Parameter, module, or property inside the asset that controls the visual_path."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,365 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "iteration-history-schema",
+  "title": "VFX Iteration History",
+  "description": "Append-only history of corrections. working/iteration_history.json stores task data. This file is the schema, not the history itself. Do not use this file as a substitute for working/validation_result.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "task",
+    "iterations",
+    "current"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "task": {
+      "$ref": "#/$defs/task"
+    },
+    "iterations": {
+      "type": "array",
+      "description": "Append one object per completed iteration. Do not replace the array.",
+      "items": {
+        "$ref": "#/$defs/iteration"
+      }
+    },
+    "current": {
+      "$ref": "#/$defs/currentState"
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "silhouette",
+        "composition",
+        "shape",
+        "scale",
+        "color",
+        "brightness",
+        "opacity",
+        "edge",
+        "motion",
+        "density",
+        "component",
+        "style",
+        "visual_direction",
+        "render_setup",
+        "unknown"
+      ]
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "set",
+        "increase",
+        "decrease",
+        "multiply",
+        "move_left",
+        "move_right",
+        "move_up",
+        "move_down",
+        "add",
+        "remove",
+        "replace",
+        "refactor",
+        "unknown"
+      ]
+    },
+    "correctionTarget": {
+      "type": "string",
+      "enum": [
+        "current_vfx",
+        "unreal_implementation",
+        "render_setup",
+        "unknown"
+      ]
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "reference_images": {
+          "type": "array",
+          "description": "reference.images[].id values from current_vfx.json.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "current_vfx": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "iteration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iteration",
+        "timestamp",
+        "action",
+        "changes",
+        "validation",
+        "next_action"
+      ],
+      "properties": {
+        "iteration": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "action": {
+          "$ref": "#/$defs/action"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "validation": {
+          "$ref": "#/$defs/validationSnapshot"
+        },
+        "regressions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/regression"
+          }
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "reason",
+        "source_difference_ids"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/correctionTarget"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "source_difference_ids": {
+          "type": "array",
+          "description": "difference.id values from the validation result that caused this iteration.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "operation"
+      ],
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/correctionTarget"
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Same path grammar as validation correction.path."
+        },
+        "operation": {
+          "$ref": "#/$defs/operation"
+        },
+        "before": {},
+        "after": {},
+        "reason": {
+          "type": "string"
+        },
+        "asset_type": {
+          "type": "string",
+          "enum": [
+            "niagara_system",
+            "niagara_emitter",
+            "material",
+            "material_instance",
+            "blueprint",
+            "cpp",
+            "texture",
+            "mesh",
+            "other"
+          ],
+          "description": "Present only when target is unreal_implementation."
+        }
+      }
+    },
+    "validationSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "similarity",
+        "validation_result_file"
+      ],
+      "properties": {
+        "similarity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "previous_similarity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "improvement": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "improved",
+            "unchanged",
+            "regressed",
+            "first_iteration",
+            "blocked"
+          ]
+        },
+        "validation_result_file": {
+          "type": "string",
+          "description": "Per-iteration archive of the validation result, for example working/history/iter_01/validation_result.json. Do not point every iteration at the single live working/validation_result.json file."
+        },
+        "render_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "render_setup_file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "regression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "description"
+      ],
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/category"
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "major",
+            "moderate",
+            "minor"
+          ]
+        }
+      }
+    },
+    "currentState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iteration",
+        "status",
+        "next_action"
+      ],
+      "properties": {
+        "iteration": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "similarity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "in_progress",
+            "converged",
+            "blocked",
+            "max_iterations_reached"
+          ],
+          "description": "converged corresponds to validation status pass. blocked corresponds to validation status blocked. in_progress corresponds to needs_iteration."
+        },
+        "last_change": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

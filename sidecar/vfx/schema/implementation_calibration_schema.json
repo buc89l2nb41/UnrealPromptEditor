@@ -1,0 +1,452 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "implementation-calibration-schema",
+  "title": "Reference To Unreal Calibration",
+  "description": "Converts normalized reference-image coordinates into Unreal world coordinates. This is not a visual specification. Target values, units, and scale belong here and must not be copied into working/current_vfx.json. Leave anchors empty and scale null when no anchor was measured or supplied. Do not invent a target length.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "status",
+    "reference_image_id",
+    "source_coordinate_space",
+    "target_coordinate_space",
+    "anchors",
+    "transform",
+    "confidence",
+    "calibration_source"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "uncalibrated",
+        "partial",
+        "calibrated"
+      ],
+      "description": "uncalibrated: no anchor and no scale. partial: at least one field is known and the transform is incomplete. calibrated: at least one anchor relates a source value to a target value."
+    },
+    "reference_image_id": {
+      "type": "string",
+      "description": "reference.images[].id in working/current_vfx.json that an anchor is read from. The schema does not check that the id exists."
+    },
+    "source_coordinate_space": {
+      "$ref": "#/$defs/sourceSpace"
+    },
+    "target_coordinate_space": {
+      "$ref": "#/$defs/targetSpace"
+    },
+    "anchors": {
+      "type": "array",
+      "description": "Measured or supplied correspondences. Empty when nothing was measured and nothing was supplied.",
+      "items": {
+        "$ref": "#/$defs/anchor"
+      }
+    },
+    "transform": {
+      "$ref": "#/$defs/transform"
+    },
+    "confidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence in the calibration. Null when uncalibrated. Do not use 0 to mean that no measurement was made."
+    },
+    "calibration_source": {
+      "$ref": "#/$defs/calibrationSource"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "uncalibrated"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "anchors": {
+            "maxItems": 0
+          },
+          "calibration_source": {
+            "const": "none"
+          },
+          "confidence": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "calibrated"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "anchors": {
+            "minItems": 1
+          },
+          "calibration_source": {
+            "enum": [
+              "user",
+              "measured",
+              "estimated"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "calibrationSource": {
+      "type": "string",
+      "enum": [
+        "none",
+        "user",
+        "measured",
+        "estimated",
+        "unknown"
+      ],
+      "description": "none: no calibration was made. user: a person supplied the anchor. measured: the anchor was measured from a known physical reference. estimated: the anchor was inferred. unknown: a value is present but its origin was not recorded."
+    },
+    "sourceSpace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "origin",
+        "x_axis",
+        "y_axis",
+        "normalization"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "reference_image"
+        },
+        "origin": {
+          "type": "string",
+          "const": "top_left"
+        },
+        "x_axis": {
+          "type": "string",
+          "const": "right"
+        },
+        "y_axis": {
+          "type": "string",
+          "const": "down"
+        },
+        "normalization": {
+          "type": "string",
+          "const": "unit_interval",
+          "description": "Coordinates in current_vfx.json are 0 to 1 on the reference image. They are not centimeters."
+        }
+      }
+    },
+    "targetSpace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "unit"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "unreal_world"
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "centimeter",
+            "meter",
+            "unreal_unit",
+            "unknown",
+            null
+          ],
+          "description": "Unit of target values. Null when no unit has been chosen."
+        }
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One correspondence between a reference-space quantity and a target-space quantity.",
+      "required": [
+        "id",
+        "reference_image_id",
+        "source_value",
+        "target_value",
+        "target_unit",
+        "confidence",
+        "calibration_source"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "reference_image_id": {
+          "type": "string",
+          "description": "reference.images[].id this anchor was read from."
+        },
+        "source_quantity": {
+          "type": "string",
+          "enum": [
+            "width",
+            "height",
+            "length",
+            "position_x",
+            "position_y",
+            "point"
+          ],
+          "description": "Which reference-space quantity source_value measures."
+        },
+        "source_value": {
+          "type": "number",
+          "description": "Value in source_coordinate_space. For a normalized length this is a fraction of the reference image, not a world length."
+        },
+        "target_value": {
+          "type": "number",
+          "description": "Value in target_coordinate_space that corresponds to source_value. Record only a measured or supplied number."
+        },
+        "target_unit": {
+          "type": "string",
+          "enum": [
+            "centimeter",
+            "meter",
+            "unreal_unit",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "calibration_source": {
+          "type": "string",
+          "enum": [
+            "user",
+            "measured",
+            "estimated",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How source coordinates are placed in the target space. Each part is null until it is known. Do not fill a part by copying a reference-normalized number.",
+      "required": [
+        "origin",
+        "axis_mapping",
+        "scale"
+      ],
+      "properties": {
+        "origin": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/origin"
+            }
+          ]
+        },
+        "axis_mapping": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/axisMapping"
+            }
+          ]
+        },
+        "scale": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/scale"
+            }
+          ]
+        }
+      }
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Point that stays fixed when source coordinates are mapped into the target space.",
+      "required": [
+        "source",
+        "target"
+      ],
+      "properties": {
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "x",
+            "y"
+          ],
+          "properties": {
+            "x": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "y": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Reference-image y. 0 is the top and 1 is the bottom."
+            }
+          }
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "x",
+            "y",
+            "z",
+            "unit"
+          ],
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            },
+            "z": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "centimeter",
+                "meter",
+                "unreal_unit",
+                "unknown"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "axisMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Which target axis receives each source axis. none means that source axis is not mapped.",
+      "required": [
+        "source_x",
+        "source_y"
+      ],
+      "properties": {
+        "source_x": {
+          "$ref": "#/$defs/targetAxis"
+        },
+        "source_y": {
+          "$ref": "#/$defs/targetAxis"
+        },
+        "source_z": {
+          "$ref": "#/$defs/targetAxis"
+        }
+      }
+    },
+    "targetAxis": {
+      "type": "string",
+      "enum": [
+        "target_x",
+        "target_y",
+        "target_z",
+        "none"
+      ]
+    },
+    "scale": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Target units per 1 reference-image unit. uniform is used when one scale applies to every mapped axis. Per-axis values are target units per 1 normalized image unit on that axis. Leave a component null when it was not derived from an anchor.",
+      "properties": {
+        "uniform": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "x": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "y": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "z": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "uniform"
+          ]
+        },
+        {
+          "required": [
+            "x"
+          ]
+        },
+        {
+          "required": [
+            "y"
+          ]
+        },
+        {
+          "required": [
+            "z"
+          ]
+        }
+      ]
+    }
+  }
+}

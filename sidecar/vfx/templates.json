@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "vocabulary": {
+    "form": {
+      "many_instances": "Many separate particles spread through space",
+      "camera_card": "One card that always faces the camera, usually with animated frames",
+      "warp_card": "One texture whose pixels warp or flow with noise",
+      "continuous_strip": "A connected trail, beam, or ribbon",
+      "chunks_3d": "Visible 3D pieces with volume",
+      "flat_surface": "A flat layer that lies on or parallel to the ground",
+      "field_2d": "A 2D grid field or fluid simulation",
+      "grid_pattern": "Particles arranged on a regular grid",
+      "audio_reactive": "Shape driven by an audio signal"
+    },
+    "emission": {
+      "burst": "Spawns once or in pulses",
+      "continuous": "Spawns every frame",
+      "static": "No spawning; a single surface or card"
+    },
+    "motion": {
+      "rising": "Moves upward",
+      "falling": "Drops under gravity",
+      "drifting": "Floats slowly with noise",
+      "radial": "Moves outward from a center",
+      "directional": "Moves along one direction or cone",
+      "following": "Trails behind a moving source",
+      "static": "Stays in place",
+      "flowing": "Surface pattern moves but the shape stays"
+    },
+    "orientation": {
+      "camera_facing": "Sprites turn toward the camera; actor rotation does not change them",
+      "velocity_aligned": "Sprites stretch along their velocity",
+      "flat_horizontal": "Lies flat; needs a mesh plane or custom sprite facing",
+      "strip": "Ribbon follows its spawn path",
+      "mesh": "Real 3D mesh orientation"
+    }
+  },
+  "templates": [
+    {
+      "id": "Empty",
+      "kind": "niagara_template",
+      "list_name": "Empty",
+      "look": "particles",
+      "form": "many_instances",
+      "emission": "continuous",
+      "motion": [],
+      "orientation": "camera_facing",
+      "summary": "Blank emitter. Use only when no other template fits the spec.",
+      "add_modules": [],
+      "params": {},
+      "example_effects": ["custom", "from scratch", "직접 구성"],
+      "doc": "01_Empty.md"
+    },
+    {
+      "id": "SimpleSpritesBurst",
+      "kind": "niagara_template",
+      "list_name": "SimpleSpriteBurst",
+      "look": "particles",
+      "form": "many_instances",
+      "emission": "burst",
+      "motion": ["radial"],
+      "orientation": "camera_facing",
+      "summary": "One short burst of sprites that fade quickly.",
+      "add_modules": [
+        {"module": "ScaleColor", "purpose": "fade alpha over life"}
+      ],
+      "params": {"SpawnCount": 30, "Velocity": 500, "Lifetime": 0.3},
+      "example_effects": ["hit spark", "impact", "pickup sparkle", "splash", "히트", "타격", "스파크", "물보라"],
+      "doc": "02_SimpleSpritesBurst.md"
+    },
+    {
+      "id": "DirectionalBurst",
+      "kind": "niagara_template",
+      "list_name": "DirectionalBurst",
+      "look": "particles",
+      "form": "many_instances",
+      "emission": "burst",
+      "motion": ["directional"],
+      "orientation": "velocity_aligned",
+      "summary": "A burst shot along one direction inside a cone.",
+      "add_modules": [
+        {"module": "ScaleColor", "purpose": "fade over life"},
+        {"module": "Collision", "purpose": "stop or bounce on surfaces"}
+      ],
+      "params": {"ConeAngle": 25, "Velocity": 600, "Lifetime": 0.1},
+      "example_effects": ["muzzle flash", "spray", "jet", "총구", "분사", "물대포"],
+      "doc": "03_DirectionalBurst.md"
+    },
+    {
+      "id": "Fountain",
+      "kind": "niagara_template",
+      "list_name": "Fountain",
+      "look": "particles",
+      "form": "many_instances",
+      "emission": "continuous",
+      "motion": ["rising", "falling"],
+      "orientation": "camera_facing",
+      "summary": "Continuous stream shot upward that arcs back down under gravity.",
+      "add_modules": [
+        {"module": "Drag", "purpose": "slow the arc"},
+        {"module": "Collision", "purpose": "land on the floor"}
+      ],
+      "params": {"SpawnRate": 100, "Gravity": -980, "Drag": 0.5},
+      "example_effects": ["fountain", "geyser", "spark shower", "rising embers", "분수", "물줄기", "간헐천", "불꽃 분수"],
+      "doc": "04_Fountain.md"
+    },
+    {
+      "id": "OmnidirectionalBurst",
+      "kind": "niagara_template",
+      "list_name": "OmnidirectionalBurst",
+      "look": "particles",
+      "form": "many_instances",
+      "emission": "burst",
+      "motion": ["radial"],
+      "orientation": "camera_facing",
+      "summary": "A large burst in every direction from one point.",
+      "add_modules": [
+        {"module": "GravityForce", "purpose": "pull debris down"},
+        {"module": "SubUVAnimation", "purpose": "animated flipbook sprites"},
+        {"module": "Drag", "purpose": "slow puffs"}
+      ],
+      "params": {"SpawnCount": 100, "RadialVelocity": 800},
+      "example_effects": ["explosion", "smoke puff", "shockwave debris", "폭발", "연기", "펑"],
+      "doc": "05_OmnidirectionalBurst.md"
+    },
+    {
+      "id": "HangingParticulates",
+      "kind": "niagara_template",
+      "list_name": "HangingParticulates",
+      "look": "particles",
+      "form": "many_instances",
+      "emission": "continuous",
+      "motion": ["drifting"],
+      "orientation": "camera_facing",
+      "summary": "Particles that hang in the air and drift with curl noise. Adding gravity makes them fall slowly.",
+      "add_modules": [
+        {"module": "GravityForce", "purpose": "slow falling"},
+        {"module": "Collision", "purpose": "settle on the ground"},
+        {"module": "PointAttractor", "purpose": "gather toward a point"}
+      ],
+      "params": {"CurlNoise": 10, "Drag": 2.0, "Lifetime": 10},
+      "example_effects": ["dust", "pollen", "fireflies", "snow", "falling leaves", "ash", "mist", "먼지", "꽃가루", "반딧불", "눈송이", "낙엽", "재", "안개 입자"],
+      "doc": "06_HangingParticulates.md"
+    },
+    {
+      "id": "Grid",
+      "kind": "niagara_template",
+      "list_name": "Grid",
+      "look": "particles",
+      "form": "grid_pattern",
+      "emission": "burst",
+      "motion": ["static"],
+      "orientation": "camera_facing",
+      "summary": "Particles placed on a regular grid.",
+      "add_modules": [],
+      "params": {"GridSize": "50x50", "CellSize": 4},
+      "example_effects": ["hologram", "digital", "pixel wall", "홀로그램", "디지털"],
+      "doc": "07_Grid.md"
+    },
+    {
+      "id": "MeshParticle",
+      "kind": "niagara_template",
+      "list_name": "Mesh",
+      "look": "mesh",
+      "form": "chunks_3d",
+      "emission": "burst",
+      "motion": ["radial", "falling"],
+      "orientation": "mesh",
+      "summary": "Each particle renders a static mesh.",
+      "add_modules": [
+        {"module": "Collision", "purpose": "bounce on the floor"}
+      ],
+      "params": {"Gravity": -980, "Restitution": 0.3},
+      "example_effects": ["debris", "rubble", "coins", "ice shards", "파편", "잔해", "동전", "얼음 조각"],
+      "doc": "08_MeshParticle.md"
+    },
+    {
+      "id": "SpriteTrailRibbon",
+      "kind": "niagara_template",
+      "list_name": "Ribbon",
+      "look": "ribbon",
+      "form": "continuous_strip",
+      "emission": "continuous",
+      "motion": ["following"],
+      "orientation": "strip",
+      "summary": "A ribbon that follows its spawn path.",
+      "add_modules": [
+        {"module": "InitializeRibbon", "purpose": "required ribbon attributes"}
+      ],
+      "params": {"RibbonWidth": 20, "Lifetime": 0.3},
+      "example_effects": ["sword slash", "missile trail", "lightning", "beam", "stream", "검기", "궤적", "번개", "빔", "물줄기"],
+      "doc": "09_SpriteTrailRibbon.md"
+    },
+    {
+      "id": "AudioOscilloscope",
+      "kind": "niagara_template",
+      "list_name": "Audio",
+      "look": "particles",
+      "form": "audio_reactive",
+      "emission": "continuous",
+      "motion": [],
+      "orientation": "camera_facing",
+      "summary": "Shape driven by an audio input.",
+      "add_modules": [],
+      "params": {},
+      "example_effects": ["music visualizer", "beat", "음악", "비트", "오디오"],
+      "doc": "10_AudioOscilloscope.md"
+    },
+    {
+      "id": "CameraCard",
+      "kind": "approach",
+      "look": "card_flipbook",
+      "form": "camera_card",
+      "emission": "static",
+      "motion": ["static"],
+      "orientation": "camera_facing",
+      "summary": "apply_vfx_recipe look=card_flipbook. A static plane actor with a looping flipbook MIC, not a Niagara system.",
+      "add_modules": [],
+      "params": {"columns": 4, "rows": 4, "fps": 10},
+      "example_effects": ["campfire", "torch flame", "smoke column", "모닥불", "횃불", "불길", "연기 기둥"],
+      "doc": ""
+    },
+    {
+      "id": "WarpCard",
+      "kind": "approach",
+      "look": "card_noise",
+      "form": "warp_card",
+      "emission": "static",
+      "motion": ["flowing"],
+      "orientation": "camera_facing",
+      "summary": "apply_vfx_recipe look=card_noise. A static plane actor whose texture warps with baked RG noise. Rotate the actor to change its angle.",
+      "add_modules": [],
+      "params": {"strength": 0.07, "speed_u": 0.05, "speed_v": 0.035},
+      "example_effects": ["heat haze", "energy field", "portal", "아지랑이", "에너지 막", "포탈"],
+      "doc": ""
+    },
+    {
+      "id": "FlatSurface",
+      "kind": "approach",
+      "look": "card_noise",
+      "form": "flat_surface",
+      "emission": "static",
+      "motion": ["flowing", "static"],
+      "orientation": "flat_horizontal",
+      "summary": "A layer lying flat. Niagara: add_niagara_renderer kind=mesh mesh=/Engine/BasicShapes/Plane with facing=default. Card: look=card_noise and rotate the plane actor flat.",
+      "add_modules": [],
+      "params": {},
+      "example_effects": ["water surface", "puddle", "lava pool", "ground ring", "magic circle", "수면", "고인 물", "웅덩이", "용암", "마법진"],
+      "doc": ""
+    },
+    {
+      "id": "Grid2DField",
+      "kind": "approach",
+      "look": "",
+      "form": "field_2d",
+      "emission": "continuous",
+      "motion": ["flowing"],
+      "orientation": "flat_horizontal",
+      "summary": "create_niagara_grid2d, then preview_niagara_grid. Only when the user asks for a 2D or Eulerian field.",
+      "add_modules": [],
+      "params": {},
+      "example_effects": ["2d fluid", "eulerian", "유체 시뮬레이션"],
+      "doc": ""
+    }
+  ],
+  "param_adjustments": [
+    {"keywords": ["밝게", "brighter"], "change": "increase Intensity, Alpha, Emissive"},
+    {"keywords": ["어둡게", "darker"], "change": "decrease Intensity, Alpha"},
+    {"keywords": ["빠르게", "faster"], "change": "increase Velocity, decrease Lifetime"},
+    {"keywords": ["느리게", "slower"], "change": "decrease Velocity, increase Lifetime and Drag"},
+    {"keywords": ["많이", "more"], "change": "increase SpawnRate or SpawnCount"},
+    {"keywords": ["적게", "fewer"], "change": "decrease SpawnRate or SpawnCount"},
+    {"keywords": ["크게", "bigger"], "change": "increase SpriteSize or Scale"},
+    {"keywords": ["작게", "smaller"], "change": "decrease SpriteSize or Scale"},
+    {"keywords": ["강하게", "stronger"], "change": "increase force values such as Gravity"},
+    {"keywords": ["약하게", "weaker"], "change": "decrease force values"}
+  ],
+  "guide_notes": [
+    "Decide the visible form, emission, motion, and orientation from the request first. Effect names are hints only; one name (e.g. water) can be a fountain, a surface, a stream, or a splash.",
+    "If the form is unclear and it changes the build, ask one short question.",
+    "search_vfx_recipe first for a saved effect that matches. Otherwise get_vfx_template_guide with form/motion and the effect text for candidates.",
+    "Resolve a template path by finding list_name in list_niagara_templates output; never type a template path from memory.",
+    "When the user is satisfied (좋아, 완벽, save, perfect), offer save_vfx_recipe."
+  ]
+}

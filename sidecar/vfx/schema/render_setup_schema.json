@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "render-setup-schema",
+  "title": "VFX Render Setup",
+  "description": "Comparison conditions reused across iterations. This file does not describe the VFX. Change it only when a validation correction targets render_setup.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "reference_image_id",
+    "locked",
+    "resolution",
+    "camera",
+    "framing",
+    "background",
+    "exposure",
+    "frame_count",
+    "output"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "reference_image_id": {
+      "type": "string",
+      "description": "Must match a reference.images[].id in working/current_vfx.json."
+    },
+    "locked": {
+      "type": "boolean",
+      "description": "When true, reuse every field below on the next render. Set false only while applying a render_setup correction, then set it true again."
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projection"
+      ],
+      "properties": {
+        "projection": {
+          "type": "string",
+          "enum": [
+            "perspective",
+            "orthographic"
+          ]
+        },
+        "field_of_view_degrees": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 170
+        },
+        "facing": {
+          "type": "string",
+          "enum": [
+            "effect",
+            "world",
+            "fixed"
+          ],
+          "description": "How the comparison camera faces the effect. This is not component.visual_direction."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "projection": {
+                "const": "perspective"
+              }
+            },
+            "required": [
+              "projection"
+            ]
+          },
+          "then": {
+            "required": [
+              "field_of_view_degrees"
+            ]
+          }
+        }
+      ]
+    },
+    "framing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "effect_center"
+      ],
+      "description": "Where the effect sits in the rendered image. Coordinates are normalized image space: x increases right, y increases down.",
+      "properties": {
+        "effect_center": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "x",
+            "y"
+          ],
+          "properties": {
+            "x": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "y": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "effect_height_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Fraction of the frame height occupied by the effect bounds."
+        }
+      }
+    },
+    "background": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "solid",
+            "scene"
+          ]
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        }
+      }
+    },
+    "exposure": {
+      "type": "number",
+      "description": "Exposure compensation used for every comparison render. Keep this value unchanged unless the correction path is exposure."
+    },
+    "frame_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of frames to render. Use more than 1 only when current_vfx motion.observed is true."
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "directory"
+      ],
+      "properties": {
+        "directory": {
+          "type": "string"
+        },
+        "still_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "frame_pattern": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Filename pattern for frame_count greater than 1. Null for a single still."
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

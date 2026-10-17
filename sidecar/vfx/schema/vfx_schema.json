@@ -1,0 +1,1194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vfx-schema",
+  "title": "Reference-Based VFX Specification",
+  "description": "Canonical schema for describing the visual intent of a VFX from one or more reference images. This schema describes what the effect should look like, not how Unreal Engine should implement it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "reference",
+    "overall",
+    "components"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1",
+      "description": "Schema version used by this VFX specification. The current version is 1.1."
+    },
+
+    "reference": {
+      "$ref": "#/$defs/reference"
+    },
+
+    "overall": {
+      "$ref": "#/$defs/overall"
+    },
+
+    "components": {
+      "type": "array",
+      "description": "Visual components that make up the effect.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+
+    "global_appearance": {
+      "$ref": "#/$defs/globalAppearance"
+    },
+
+    "notes": {
+      "type": "array",
+      "description": "Additional visual observations that cannot be represented by structured fields. These notes must describe visual evidence, not Unreal implementation decisions.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+
+  "$defs": {
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence that the specified visual property accurately represents observable evidence."
+    },
+
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed",
+        "confidence"
+      ],
+      "properties": {
+        "observed": {
+          "type": "boolean",
+          "description": "True when the property is directly supported by the reference image. False when it is inferred or assumed."
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      }
+    },
+
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image_count",
+        "images"
+      ],
+      "properties": {
+        "image_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "images": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/referenceImage"
+          }
+        }
+      }
+    },
+
+    "referenceImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable identifier for this reference image, for example ref_01. Every component.source_images entry refers to one of these ids."
+        },
+        "path": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+
+    "overall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bounds",
+        "center",
+        "aspect_ratio",
+        "symmetry",
+        "dominant_direction",
+        "visual_density",
+        "style"
+      ],
+      "properties": {
+        "bounds": {
+          "$ref": "#/$defs/bounds"
+        },
+
+        "center": {
+          "$ref": "#/$defs/normalizedPoint"
+        },
+
+        "aspect_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Overall width divided by overall height. This has the same meaning as bounds.width / bounds.height."
+        },
+
+        "symmetry": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Approximate visual symmetry. 0 is strongly asymmetric, 1 is highly symmetric."
+        },
+
+        "dominant_direction": {
+          "$ref": "#/$defs/visualDirection",
+          "description": "Effect-level still-image direction. This is the same concept as component.visual_direction, applied to the whole effect. It is not motion.direction."
+        },
+
+        "visual_density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Relative amount of visible visual mass or particle/detail density."
+        },
+
+        "style": {
+          "type": "string",
+          "enum": [
+            "realistic",
+            "stylized",
+            "cartoon",
+            "graphic",
+            "painterly",
+            "abstract",
+            "hybrid",
+            "unknown"
+          ]
+        },
+
+        "feature_stability": {
+          "$ref": "#/$defs/featureStability"
+        }
+      }
+    },
+
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Left position in normalized reference-image coordinates."
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Top position in normalized reference-image coordinates."
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Width normalized to the reference-image width."
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Height normalized to the reference-image height."
+        }
+      }
+    },
+
+    "normalizedPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+
+    "visualDirection": {
+      "type": "string",
+      "enum": [
+        "up",
+        "down",
+        "left",
+        "right",
+        "radial_out",
+        "radial_in",
+        "horizontal",
+        "vertical",
+        "none",
+        "unknown"
+      ],
+      "description": "Still-image orientation. This is not observed motion and must not be copied into motion.direction."
+    },
+
+    "featureStability": {
+      "type": "string",
+      "enum": [
+        "common",
+        "variable",
+        "image_specific",
+        "unknown"
+      ],
+      "description": "Stability of this feature across reference images. common: observed in every reference image. variable: present in more than one image, but its shape or value changes between images. image_specific: observed only in a particular reference image. unknown: the references cannot be compared. A single reference image does not require unknown. Use image_specific when the feature is clearly present only in that image."
+    },
+
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "importance",
+        "kind",
+        "observed",
+        "confidence",
+        "visual_direction",
+        "shape",
+        "transform",
+        "appearance",
+        "motion",
+        "behavior"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*_[0-9]{2}$",
+          "description": "Stable component identifier. The recommended form is a lowercase name plus a two-digit suffix, for example primary_01."
+        },
+
+        "importance": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "tertiary",
+            "highlight"
+          ],
+          "description": "How strongly this component determines the effect. Independent of kind, so a component can be both secondary and a glow, or both highlight and a particle."
+        },
+
+        "kind": {
+          "type": "string",
+          "enum": [
+            "core",
+            "glow",
+            "particle",
+            "smoke",
+            "trail",
+            "debris",
+            "edge",
+            "distortion",
+            "blob",
+            "streak",
+            "ribbon",
+            "unknown"
+          ],
+          "description": "Visual kind of the component. This is not its importance and it is not an Unreal renderer choice."
+        },
+
+        "visual_direction": {
+          "$ref": "#/$defs/visualDirection"
+        },
+
+        "observed": {
+          "type": "boolean",
+          "description": "Whether this component is directly visible in the reference."
+        },
+
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+
+        "source_images": {
+          "type": "array",
+          "description": "Reference images in which this component is visible. Each entry must match a reference.images[].id.",
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "feature_stability": {
+          "$ref": "#/$defs/featureStability"
+        },
+
+        "description": {
+          "type": "string",
+          "description": "Human-readable visual description of the component."
+        },
+
+        "shape": {
+          "$ref": "#/$defs/shape"
+        },
+
+        "transform": {
+          "$ref": "#/$defs/transform"
+        },
+
+        "appearance": {
+          "$ref": "#/$defs/appearance"
+        },
+
+        "motion": {
+          "$ref": "#/$defs/motion"
+        },
+
+        "behavior": {
+          "$ref": "#/$defs/behavior"
+        },
+
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/relationship"
+          }
+        }
+      }
+    },
+
+    "shapeProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Position-specific cross-section of one component. left and right are the observed edges. shape.taper only summarizes the overall narrowing or widening tendency. This profile does not depend on kind: an unknown kind may still have a profile.",
+      "required": [
+        "axis",
+        "centerline",
+        "samples"
+      ],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "enum": [
+            "bottom_to_top",
+            "top_to_bottom",
+            "left_to_right",
+            "right_to_left"
+          ],
+          "description": "Sample axis. bottom_to_top: t=0 is bottom and t=1 is top. top_to_bottom: t=0 is top and t=1 is bottom. left_to_right: t=0 is left and t=1 is right. right_to_left: t=0 is right and t=1 is left."
+        },
+        "centerline": {
+          "$ref": "#/$defs/profileCenterline"
+        },
+        "samples": {
+          "type": "array",
+          "minItems": 2,
+          "description": "Cross-section samples along the axis. At least two samples are required. Three to five samples are recommended. Record only edges that were visible.",
+          "items": {
+            "$ref": "#/$defs/profileSample"
+          }
+        }
+      }
+    },
+
+    "profileCenterline": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Origin of profile sample offsets, in reference-image space. x and y are 0 to 1. The origin is the top-left of the image and y increases downward. This is not transform.relative_position and it is not an Unreal location.",
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+
+    "profileSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One cross-section. left and right are signed offsets from profile.centerline, normalized by the reference-image width. For bottom_to_top and top_to_bottom, image_x = centerline.x + offset, negative is image-left, and positive is image-right. For left_to_right and right_to_left, the offset is perpendicular to the axis: negative is toward smaller image y (up), and image_y = centerline.y + offset * image_width / image_height. A missing side is omitted. Do not invent the hidden side. width, when present, is the derived span right - left and is not a separate observation.",
+      "required": [
+        "t"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "left"
+          ]
+        },
+        {
+          "required": [
+            "right"
+          ]
+        }
+      ],
+      "properties": {
+        "t": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Position along profile.axis. 0.0 is the start of that axis and 1.0 is the end."
+        },
+        "left": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Signed offset of the negative side of the cross-section. See profileSample. For a vertical axis this is the image-left edge."
+        },
+        "right": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Signed offset of the positive side of the cross-section. See profileSample. For a vertical axis this is the image-right edge."
+        },
+        "width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Derived value right - left, in reference-image-width units. Omit it when either side was not measured. Do not store a width that disagrees with right - left."
+        }
+      }
+    },
+
+    "outline": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Generic observed boundary in reference-image space. Usable when kind is unknown and when shape.type is unknown, polygon, or outline. Points are not Unreal coordinates. Omit the outline when the boundary was not measured. Do not invent vertices.",
+      "required": [
+        "space",
+        "closed",
+        "points"
+      ],
+      "properties": {
+        "space": {
+          "type": "string",
+          "const": "reference_image",
+          "description": "Origin is the top-left of the reference image. x increases right. y increases down. Both are 0 to 1."
+        },
+        "closed": {
+          "type": "boolean",
+          "description": "True when the first and last points are joined. False when only an open chain was observed."
+        },
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "description": "Observed boundary points in order. A closed outline needs at least three points.",
+          "items": {
+            "$ref": "#/$defs/normalizedPoint"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "closed": {
+                "const": true
+              }
+            },
+            "required": [
+              "closed"
+            ]
+          },
+          "then": {
+            "properties": {
+              "points": {
+                "minItems": 3
+              }
+            }
+          }
+        }
+      ]
+    },
+
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How repeated instances are spread in the reference image. This is not an Unreal spawn distribution and it does not assign a count.",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "scatter",
+            "cluster",
+            "line",
+            "ring",
+            "fill",
+            "unknown"
+          ],
+          "description": "scatter: separated spots. cluster: one tight group. line: arranged along a path. ring: arranged around a center. fill: spread through a region. unknown: the arrangement was not determined."
+        },
+        "region": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/bounds"
+            }
+          ],
+          "description": "Reference-image bounds containing the observed instances. x and y are the top-left. y increases downward. This is not transform.relative_position."
+        }
+      }
+    },
+
+    "sizeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Observed instance size range, normalized like shape.width and shape.height. Record only sizes that were measured. This is not a spawn size module.",
+      "required": [
+        "min_width",
+        "max_width",
+        "min_height",
+        "max_height"
+      ],
+      "properties": {
+        "min_width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+
+    "instanceMark": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One observed instance in reference-image space. x and y are the instance center. Origin is the top-left and y increases downward.",
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source_image": {
+          "type": "string",
+          "description": "reference.images[].id of the still where this instance was located. The schema does not check that the id exists."
+        }
+      }
+    },
+
+    "shape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "width",
+        "height",
+        "aspect_ratio",
+        "irregularity",
+        "symmetry"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "organic",
+            "blob",
+            "cloud",
+            "sphere",
+            "ring",
+            "streak",
+            "ribbon",
+            "mesh_like",
+            "point",
+            "plane",
+            "polygon",
+            "outline",
+            "unknown"
+          ],
+          "description": "Geometry class. polygon and outline are generic boundaries and do not assign a semantic kind. unknown means the geometry class was not identified. kind unknown does not forbid profile, outline, or polygon."
+        },
+
+        "width": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Component bounding width normalized to the reference-image width. This is the reference-relative size. Unreal scale conversion belongs in implementation_calibration.json, not in this specification. Position-specific edges belong in profile.samples as left and right. A sample width is only the derived span right - left."
+        },
+
+        "height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Component height normalized to the reference-image height."
+        },
+
+        "aspect_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Component width divided by component height. This has the same meaning as shape.width / shape.height."
+        },
+
+        "depth": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Estimated relative depth when visually inferable."
+        },
+
+        "irregularity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "symmetry": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "taper": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Overall narrowing or widening tendency. Negative values narrow and positive values widen. This is only a summary. The primary shape description is profile.samples left and right."
+        },
+
+        "fragmentation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "curvature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Visible instance count when one count was observed. Omit it when the count was not observed, and set count_unknown instead. This is not an Unreal spawn rate. The length of instances is not a substitute for count when count_unknown is true."
+        },
+
+        "count_unknown": {
+          "type": "boolean",
+          "description": "True when repeated instances are visible but a single count was not observed. When true, count must be omitted. False or omitted when count is a real observation or the component is not a repeated group."
+        },
+
+        "distribution": {
+          "$ref": "#/$defs/distribution"
+        },
+
+        "size_range": {
+          "$ref": "#/$defs/sizeRange"
+        },
+
+        "instances": {
+          "type": "array",
+          "description": "Optional observed instance positions. The list may be partial. Do not add positions that were not located. A partial list together with count_unknown does not imply that the array length is the count.",
+          "items": {
+            "$ref": "#/$defs/instanceMark"
+          }
+        },
+
+        "profile": {
+          "$ref": "#/$defs/shapeProfile"
+        },
+
+        "outline": {
+          "$ref": "#/$defs/outline"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "count_unknown": {
+                "const": true
+              }
+            },
+            "required": [
+              "count_unknown"
+            ]
+          },
+          "then": {
+            "properties": {
+              "count": false
+            }
+          }
+        }
+      ]
+    },
+
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Placement relative to the overall effect. Reference-relative size is shape.width and shape.height.",
+      "required": [
+        "relative_position"
+      ],
+      "properties": {
+        "relative_position": {
+          "$ref": "#/$defs/normalizedRelativePoint"
+        },
+
+        "rotation": {
+          "type": "number",
+          "description": "Still-image orientation in degrees. This is not motion.rotation."
+        }
+      }
+    },
+
+    "normalizedRelativePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Offset from the overall effect center. -1 is left. +1 is right. Magnitude 1 reaches the corresponding left or right edge of overall.bounds."
+        },
+        "y": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Offset from the overall effect center. -1 is up. +1 is down. Magnitude 1 reaches the corresponding upper or lower edge of overall.bounds. This is not image space: bounds.y increases downward from the top of the image, while this y is negative upward."
+        }
+      }
+    },
+
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "colors",
+        "brightness",
+        "opacity",
+        "emissive",
+        "edge_softness"
+      ],
+      "properties": {
+        "colors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/color"
+          }
+        },
+
+        "brightness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "How light the component appears. 0 is black and 1 is the brightest visible region. This is not emissive."
+        },
+
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "How transparent the component appears. 0 is invisible and 1 is opaque. This is not edge_softness."
+        },
+
+        "emissive": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "How strongly the component appears to emit light beyond its surface color. This is not brightness."
+        },
+
+        "edge_softness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Spatial edge falloff of the component silhouette. 0 is a hard silhouette edge. 1 is a very soft falloff. This is not opacity and it is not temporal fade."
+        },
+
+        "gradient_direction": {
+          "type": "string",
+          "enum": [
+            "bottom_to_top",
+            "top_to_bottom",
+            "left_to_right",
+            "right_to_left",
+            "center_to_edge",
+            "edge_to_center",
+            "radial",
+            "none",
+            "unknown"
+          ]
+        },
+
+        "gradient_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "contrast": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+
+    "globalColor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "value"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "dominant",
+            "secondary",
+            "highlight",
+            "shadow",
+            "edge"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "estimated"
+          ]
+        }
+      }
+    },
+
+    "color": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "value"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "dominant",
+            "secondary",
+            "highlight",
+            "shadow",
+            "edge"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "observed",
+            "estimated"
+          ]
+        },
+
+        "position": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Where this color sits within the component. 0.0 is the component center. 1.0 is the component edge."
+        }
+      }
+    },
+
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Observed movement only. A static silhouette that points upward is recorded in visual_direction, not here.",
+      "required": [
+        "observed",
+        "confidence",
+        "direction"
+      ],
+      "if": {
+        "properties": {
+          "observed": {
+            "const": true
+          }
+        },
+        "required": [
+          "observed"
+        ]
+      },
+      "then": {
+        "required": [
+          "speed",
+          "acceleration",
+          "turbulence",
+          "randomness",
+          "expansion",
+          "rotation"
+        ]
+      },
+      "properties": {
+        "observed": {
+          "type": "boolean",
+          "description": "True only when movement is directly visible. False for a single static reference."
+        },
+
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+
+        "direction": {
+          "type": "string",
+          "enum": [
+            "up",
+            "down",
+            "left",
+            "right",
+            "radial_out",
+            "radial_in",
+            "orbit",
+            "random",
+            "none",
+            "unknown"
+          ],
+          "description": "Observed motion direction. Do not set this from still-image orientation. Use unknown when motion was not observed. Use component.visual_direction for the direction a still shape appears to point."
+        },
+
+        "speed": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Relative motion speed. This is not Unreal units per second."
+        },
+
+        "acceleration": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+
+        "turbulence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "randomness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "expansion": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Negative values contract, positive values expand."
+        },
+
+        "rotation": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Relative rotational motion."
+        }
+      }
+    },
+
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Temporal behavior. All time values are in seconds.",
+      "required": [
+        "observed",
+        "confidence"
+      ],
+      "properties": {
+        "observed": {
+          "type": "boolean",
+          "description": "True when lifetime or fade is directly visible. False when a static reference does not show temporal behavior."
+        },
+
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+
+        "lifetime_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Visible lifetime in seconds."
+        },
+
+        "fade_in_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fade-in duration in seconds."
+        },
+
+        "fade_out_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fade-out duration in seconds."
+        },
+
+        "persistence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "target_id"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "inside",
+            "overlap",
+            "surround",
+            "trail",
+            "originates_from",
+            "attached_to",
+            "follows",
+            "adjacent_to",
+            "above",
+            "below",
+            "behind",
+            "in_front_of"
+          ]
+        },
+
+        "target_id": {
+          "type": "string",
+          "description": "The other component in this relationship. The value must match another component.id in this specification."
+        },
+
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+
+    "globalAppearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dominant_colors": {
+          "type": "array",
+          "description": "Effect-level colors. These colors have no component center, so they do not use color.position.",
+          "items": {
+            "$ref": "#/$defs/globalColor"
+          }
+        },
+
+        "brightness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall brightness of the effect. Per-component brightness is appearance.brightness."
+        },
+
+        "contrast": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+
+        "glow": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall glow strength. A distinct glow region is also a component whose kind is glow."
+        },
+
+        "softness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall softness of the effect. Per-component silhouette falloff is appearance.edge_softness."
+        }
+      }
+    }
+  }
+}

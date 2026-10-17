@@ -1,0 +1,663 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "validation-schema",
+  "title": "VFX Validation Result",
+  "description": "Latest comparison between the reference, working/current_vfx.json, and a render produced under working/render_setup.json. This file is current state, not iteration history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "status",
+    "inputs",
+    "overall",
+    "differences"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "needs_iteration",
+        "blocked"
+      ],
+      "description": "pass: stop, remaining differences are minor or uncertain. needs_iteration: apply the highest-priority correction. blocked: comparison cannot be completed."
+    },
+    "inputs": {
+      "$ref": "#/$defs/inputs"
+    },
+    "overall": {
+      "$ref": "#/$defs/overallResult"
+    },
+    "alignment": {
+      "$ref": "#/$defs/alignmentResult"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/componentResult"
+      }
+    },
+    "differences": {
+      "type": "array",
+      "description": "Actionable visual differences, highest priority first.",
+      "items": {
+        "$ref": "#/$defs/difference"
+      }
+    },
+    "regressions": {
+      "type": "array",
+      "description": "Properties that were closer on the previous render and are worse now.",
+      "items": {
+        "$ref": "#/$defs/regression"
+      }
+    },
+    "iteration": {
+      "$ref": "#/$defs/iterationResult"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current_vfx",
+        "reference_image",
+        "render_image",
+        "render_setup"
+      ],
+      "properties": {
+        "current_vfx": {
+          "type": "string",
+          "description": "Path of the visual specification that was compared. Normally working/current_vfx.json."
+        },
+        "reference_image": {
+          "type": "string"
+        },
+        "render_image": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Rendered image used for this comparison. Null when no render exists."
+        },
+        "render_setup": {
+          "type": "string",
+          "description": "Path of the comparison conditions. Normally working/render_setup.json."
+        }
+      }
+    },
+    "score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "overallResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "similarity",
+        "confidence"
+      ],
+      "properties": {
+        "similarity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall visual similarity. Null only when status is blocked and no comparison was made."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "silhouette": {
+          "$ref": "#/$defs/score"
+        },
+        "composition": {
+          "$ref": "#/$defs/score"
+        },
+        "scale": {
+          "$ref": "#/$defs/score"
+        },
+        "color": {
+          "$ref": "#/$defs/score"
+        },
+        "brightness": {
+          "$ref": "#/$defs/score"
+        },
+        "opacity": {
+          "$ref": "#/$defs/score"
+        },
+        "edge": {
+          "$ref": "#/$defs/score"
+        },
+        "motion": {
+          "$ref": "#/$defs/score"
+        },
+        "density": {
+          "$ref": "#/$defs/score"
+        },
+        "style": {
+          "$ref": "#/$defs/score"
+        },
+        "visual_direction": {
+          "$ref": "#/$defs/score"
+        }
+      }
+    },
+    "alignmentResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aligned": {
+          "type": "boolean"
+        },
+        "reference_center": {
+          "$ref": "#/$defs/imagePoint"
+        },
+        "render_center": {
+          "$ref": "#/$defs/imagePoint"
+        },
+        "reference_bounds": {
+          "$ref": "#/$defs/imageBounds"
+        },
+        "render_bounds": {
+          "$ref": "#/$defs/imageBounds"
+        },
+        "center_error": {
+          "type": "number",
+          "minimum": 0
+        },
+        "scale_error": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "imagePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "description": "Normalized image point. x increases right. y increases down. This matches current_vfx overall.center and overall.bounds, not transform.relative_position.",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "imageBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
+      "description": "Normalized image bounds. x and y are the top-left. This is the same bounds object as current_vfx overall.bounds.",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "componentResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "status",
+        "similarity",
+        "confidence"
+      ],
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "description": "current_vfx component.id when the component exists in the specification. Use a descriptive id only for an extra render element that has no specification component."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "matched",
+            "partially_matched",
+            "missing",
+            "extra",
+            "uncertain"
+          ]
+        },
+        "similarity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "shape": {
+          "$ref": "#/$defs/score"
+        },
+        "position": {
+          "$ref": "#/$defs/score"
+        },
+        "scale": {
+          "$ref": "#/$defs/score"
+        },
+        "color": {
+          "$ref": "#/$defs/score"
+        },
+        "brightness": {
+          "$ref": "#/$defs/score"
+        },
+        "opacity": {
+          "$ref": "#/$defs/score"
+        },
+        "edge": {
+          "$ref": "#/$defs/score"
+        },
+        "emissive": {
+          "$ref": "#/$defs/score"
+        },
+        "density": {
+          "$ref": "#/$defs/score"
+        },
+        "motion": {
+          "$ref": "#/$defs/score"
+        },
+        "visual_direction": {
+          "$ref": "#/$defs/score"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "silhouette",
+        "composition",
+        "shape",
+        "scale",
+        "color",
+        "brightness",
+        "opacity",
+        "edge",
+        "motion",
+        "density",
+        "component",
+        "style",
+        "visual_direction",
+        "render_setup",
+        "unknown"
+      ],
+      "description": "silhouette is the overall outline. shape is one component's shape. edge is appearance.edge_softness. visual_direction is still-image orientation. motion is observed movement only. render_setup is framing, exposure, or background."
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "set",
+        "increase",
+        "decrease",
+        "multiply",
+        "move_left",
+        "move_right",
+        "move_up",
+        "move_down",
+        "add",
+        "remove",
+        "replace",
+        "refactor",
+        "unknown"
+      ],
+      "description": "set replaces the value. multiply scales it by value. increase and decrease add or subtract value as a normalized delta. move_* shifts position by value. refactor is allowed only for unreal_implementation."
+    },
+    "correctionTarget": {
+      "type": "string",
+      "enum": [
+        "current_vfx",
+        "unreal_implementation",
+        "render_setup",
+        "unknown"
+      ],
+      "description": "current_vfx edits working/current_vfx.json. unreal_implementation edits Unreal assets recorded in working/implementation_map.json. render_setup edits working/render_setup.json. Do not edit schema/*.json."
+    },
+    "difference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "category",
+        "severity",
+        "confidence",
+        "description",
+        "correction"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable difference id. iteration history stores this value in source_difference_ids."
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
+          "$ref": "#/$defs/category"
+        },
+        "property": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Canonical path of the compared visual property. For a specification mismatch this is a current_vfx path such as components[id=primary_01].shape.width."
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "major",
+            "moderate",
+            "minor"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "reference_value": {},
+        "render_value": {},
+        "correction": {
+          "$ref": "#/$defs/correction"
+        }
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cause",
+        "target",
+        "operation"
+      ],
+      "properties": {
+        "cause": {
+          "type": "string",
+          "enum": [
+            "specification",
+            "implementation",
+            "render_setup",
+            "unknown"
+          ],
+          "description": "specification: current_vfx does not match the reference. implementation: current_vfx matches the reference and the render does not. render_setup: framing, exposure, or background prevents comparison."
+        },
+        "target": {
+          "$ref": "#/$defs/correctionTarget"
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "current_vfx path, render_setup path, or implementation_map path entries[id=<id>]. Use components[id=<component_id>] for component fields. Split on dots outside brackets, so samples[t=0.5].left is the sample selector plus left. Sample width is the derived span right - left."
+        },
+        "operation": {
+          "$ref": "#/$defs/operation"
+        },
+        "value": {
+          "description": "set: new absolute value. multiply: factor. increase/decrease: normalized delta. move_*: normalized offset. add: object to add. remove: id to remove."
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "specification"
+              }
+            },
+            "required": [
+              "cause"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "const": "current_vfx"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "implementation"
+              }
+            },
+            "required": [
+              "cause"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "const": "unreal_implementation"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "render_setup"
+              }
+            },
+            "required": [
+              "cause"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "const": "render_setup"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "target": {
+                "enum": [
+                  "current_vfx",
+                  "render_setup"
+                ]
+              }
+            },
+            "required": [
+              "target"
+            ]
+          },
+          "then": {
+            "required": [
+              "path"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "regression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "description"
+      ],
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/category"
+        },
+        "component_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "major",
+            "moderate",
+            "minor"
+          ]
+        }
+      }
+    },
+    "iterationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "iteration": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "previous_similarity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "current_similarity": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "improvement": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "should_continue": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "pass",
+              "needs_iteration"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "overall": {
+            "properties": {
+              "similarity": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
